@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tebby's Fast Food Joint | Modern Menu Layout</title>
+    <style>
+        :root {
+            --bg-main: #08080c;
+            --panel-glass: rgba(22, 22, 30, 0.75);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --brand-gold: #f2ba18;
+            --brand-coral: #e63946;
+            --brand-whatsapp: #25d366;
+            --text-primary: #f8f9fa;
+            --text-secondary: #94a3b8;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            padding-bottom: 120px;
+            line-height: 1.5;
+        }
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(8, 8, 12, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-glass);
+            padding: 15px 20px;
+            text-align: center;
+        }
+        .header-logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--brand-gold);
+        }
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+        .tab-scroller {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 12px;
+            margin-bottom: 25px;
+            position: sticky;
+            top: 70px;
+            background: var(--bg-main);
+            z-index: 90;
+            scrollbar-width: none;
+        }
+        .tab-scroller::-webkit-scrollbar { display: none; }
+        .day-tab {
+            background: var(--panel-glass);
+            border: 1px solid var(--border-glass);
+            color: var(--text-secondary);
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .day-tab.active {
+            background: var(--brand-gold);
+            color: #000;
+            border-color: var(--brand-gold);
+        }
+        .section-header {
+            color: var(--brand-gold);
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            margin: 25px 0 12px 0;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border-glass);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .section-header::after {
+            content: '▾';
+            font-size: 1rem;
+            color: var(--text-secondary);
+            transition: transform 0.2s;
+        }
+        .menu-section.collapsed .section-header::after {
+            transform: rotate(-90deg);
+        }
+        .section-content {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out, opacity 0.2s ease;
+            opacity: 1;
+        }
+        .menu-section.collapsed .section-content {
+            max-height: 0;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .section-note {
+            font-size: 0.85rem;
+            color: var(--brand-gold);
+            margin-bottom: 10px;
+            background: rgba(242, 186, 24, 0.08);
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+        }
+        .menu-card {
+            background: var(--panel-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        /* Made price badges look clickable with a cursor pointer and smooth scale effect */
+        .price-badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            color: var(--brand-gold);
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        .price-badge:hover {
+            background: var(--brand-whatsapp);
+            color: #000;
+            transform: scale(1.08);
+        }
+        .hub-card {
+            background: var(--panel-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 24px;
+            margin-top: 30px;
+            text-align: center;
+        }
+        .hub-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 18px;
+            color: var(--brand-gold);
+        }
+        .qr-wrapper {
+            background: white;
+            padding: 12px;
+            border-radius: 16px;
+            display: inline-block;
+            margin-bottom: 22px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+        .qr-wrapper img {
+            display: block;
+            width: 150px;
+            height: 150px;
+        }
+        .social-link-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .social-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        .sticky-footer {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(8, 8, 12, 0.95);
+            backdrop-filter: blur(16px);
+            border-top: 1px solid var(--border-glass);
+            padding: 15px 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+        .btn {
+            flex: 1; padding: 14px; border-radius: 14px;
+            font-weight: 700; text-align: center; text-decoration: none;
+        }
+        .btn-primary { background: var(--brand-gold); color: #000; }
+        .btn-secondary { background: #16161e; color: #fff; border: 1px solid var(--border-glass); }
+    </style>
+</head>
+<body>
+    <header><div class="header-logo">TEBBY'S FAST FOOD</div></header>
+    <div class="container">
+        <div class="tab-scroller">
+            <div class="day-tab" id="tab-monday" onclick="scrollToDay('monday')">Monday</div>
+            <div class="day-tab" id="tab-tuesday" onclick="scrollToDay('tuesday')">Tuesday</div>
+            <div class="day-tab" id="tab-wednesday" onclick="scrollToDay('wednesday')">Wednesday</div>
+            <div class="day-tab" id="tab-thursday" onclick="scrollToDay('thursday')">Thursday</div>
+            <div class="day-tab" id="tab-friday" onclick="scrollToDay('friday')">Friday</div>
+            <div class="day-tab" id="tab-saturday" onclick="scrollToDay('saturday')">Saturday</div>
+            <div class="day-tab" id="tab-sunday" onclick="scrollToDay('sunday')">Sunday</div>
+        </div>
+        <div id="monday" class="menu-section">
+            <h3 class="section-header" onclick="toggleSection('monday')">Monday</h3>
+            <div class="section-content">
+                <div class="menu-card"><div class="item-details"><h4>Pap / Mabele + Mogodu</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Pap / Mabele + Mogodu')">R60</div></div>
+                <div class="menu-card"><div class="item-details"><h4>Pap / Mabele + Skopo</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Pap / Mabele + Skopo')">R60</div></div>
+            </div>
+        </div>
+        <div id="tuesday" class="menu-section">
+            <h3 class="section-header" onclick="toggleSection('tuesday')">Tuesday</h3>
+            <div class="section-content">
+                <div class="section-note">✨ All meals come with 2 salads</div>
+                <div class="menu-card"><div class="item-details"><h4>Pap + Steak</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Pap + Steak')">R70</div></div>
+                <div class="menu-card"><div class="item-details"><h4>Pap + 4 Wings</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Pap + 4 Wings')">R65</div></div>
+                <div class="menu-card"><div class="item-details"><h4>Hake + Rice</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Hake + Rice')">R60</div></div>
+            </div>
+        </div>
+        <div id="wednesday" class="menu-section">
+            <h3 class="section-header" onclick="toggleSection('wednesday')">Wednesday</h3>
+            <div class="section-content">
+                <div class="section-note">✨ All meals come with 2 salads</div>
+                <div class="menu-card"><div class="item-details"><h4>Pap / Rice + Beef Stew</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Pap / Rice + Beef Stew')">R70</div></div>
+                <div class="menu-card"><div class="item-details"><h4>Pap + Quarter Chicken</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Pap + Quarter Chicken')">R60</div></div>
+                <div class="menu-card"><div class="item-details"><h4>Pap + 1 Pork Chop & 1 Wors</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Pap + 1 Pork Chop & 1 Wors')">R70</div></div>
+            </div>
+        </div>
+
+
+        <div id="thursday" class="menu-section">
+            <h3 class="section-header" onclick="toggleSection('thursday')">Thursday</h3>
+            <div class="section-content">
+                <div class="menu-card"><div class="item-details"><h4>Beef Wrap + 2 Wings + Chips</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Beef Wrap + 2 Wings + Chips')">R65</div></div>
+                <div class="menu-card"><div class="item-details"><h4>Chicken Wrap + 2 Wings + Chips</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Chicken Wrap + 2 Wings + Chips')">R65</div></div>
+                <div class="menu-card"><div class="item-details"><h4>Pap + Steak + 2 Salads</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Pap + Steak + 2 Salads')">R70</div></div>
+            </div>
+        </div>
+        <div id="friday" class="menu-section">
+            <h3 class="section-header" onclick="toggleSection('friday')">Friday</h3>
+            <div class="section-content">
+                <div class="section-note">✨ All meals come with 1 salad</div>
+                <div class="menu-card"><div class="item-details"><h4>Chicken Burger + Chips</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Chicken Burger + Chips')">R50</div></div>
+                <div class="menu-card"><div class="item-details"><h4>Beef Burger + Chips</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Beef Burger + Chips')">R50</div></div>
+                <div class="menu-card"><div class="item-details"><h4>Wrap + Chips</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Wrap + Chips')">R50</div></div>
+                <div class="menu-card"><div class="item-details"><h4>Wings + Chips</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Wings + Chips')">R50</div></div>
+                <div class="menu-card"><div class="item-details"><h4>Hake + Chips</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Hake + Chips')">R60</div></div>
+            </div>
+        </div>
+        <div id="saturday" class="menu-section">
+            <h3 class="section-header" onclick="toggleSection('saturday')">Saturday</h3>
+            <div class="section-content">
+                <div class="menu-card"><div class="item-details"><h4>Pap + Steak</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Pap + Steak')">R70</div></div>
+                <div class="menu-card"><div class="item-details"><h4>Pap + Skopo</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Pap + Skopo')">R60</div></div>
+                <div class="menu-card"><div class="item-details"><h4>Pap + Quarter Chicken</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Pap + Quarter Chicken')">R60</div></div>
+            </div>
+        </div>
+        <div id="sunday" class="menu-section">
+            <h3 class="section-header" onclick="toggleSection('sunday')">Sunday</h3>
+            <div class="section-content">
+                <div class="menu-card"><div class="item-details"><h4>Pap + Tlhakwana</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Pap + Tlhakwana')">R60</div></div>
+                <div class="menu-card"><div class="item-details"><h4>Pap + Mogodu</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Pap + Mogodu')">R60</div></div>
+                <div class="menu-card"><div class="item-details"><h4>Pap + Skopo</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Pap + Skopo')">R60</div></div>
+                <div class="menu-card"><div class="item-details"><h4>Pap + Beef Stew</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Pap + Beef Stew')">R70</div></div>
+                <div class="menu-card"><div class="item-details"><h4>Pap + Wings (4)</h4></div><div class="price-badge" onclick="orderViaWhatsApp('Pap + Wings (4)')">R65</div></div>
+            </div>
+        </div>
+        
+        <div class="hub-card">
+            <div class="hub-title">Scan or Connect Directly</div>
+            <div class="qr-wrapper">
+                <!-- Using your custom PNG if placed in same folder as index.html -->
+                <img src="qr_code.png" onerror="this.src='https://qrserver.com'" alt="QR Code">
+            </div>
+            <div class="social-link-stack">
+                <a href="https://wa.me" class="social-row" target="_blank">
+                    <span style="color: var(--brand-whatsapp)">💬 WhatsApp Chat (083 243 0130)</span>
+                    <strong>Open Link</strong>
+                </a>
+                <a href="https://facebook.com" class="social-row" target="_blank">
+                    <span style="color: #1877f2">🌐 Facebook: Tebogo Kotane</span>
+                    <strong>Visit Page</strong>
+                </a>
+                <a href="mailto:nkhiics@gmail.com" class="social-row">
+                    <span style="color: var(--brand-gold)">📧 Email: tebza01@gmail.com</span>
+                    <strong>Send Mail</strong>
+                </a>
+                <div class="social-row">
+                    <span style="color: var(--text-secondary)">📍 Kitchen Location</span>
+                    <strong>4954 Mareuma St, Boitekong</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="sticky-footer">
+        <a href="tel:0832430130" class="btn btn-secondary">📞 Dial Direct Line</a>
+        <a href="https://wa.me" target="_blank" class="btn btn-primary" style="background:var(--brand-whatsapp); color:#000;">WhatsApp Chat</a>
+    </div>
+    <script>
+        // Direct price-tap text generator logic
+        function orderViaWhatsApp(itemName) {
+            const phoneNumber = "27832430130";
+            const customMessage = `Hello Tebby's Fast Food, I would like to order:\n\n• 1x ${itemName}\n\nThank you!`;
+            const encodedMessage = encodeURIComponent(customMessage);
+            
+            // Instantly open the order text inside WhatsApp
+            window.open(`https://wa.me{phoneNumber}?text=${encodedMessage}`, '_blank');
+        }
+
+        function toggleSection(dayId) {
+            document.getElementById(dayId).classList.toggle('collapsed');
+        }
+        function scrollToDay(dayId) {
+            const section = document.getElementById(dayId);
+            section.classList.remove('collapsed');
+            const yOffset = -130; 
+            const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+            updateActiveTab(dayId);
+        }
+        function updateActiveTab(dayId) {
+            document.querySelectorAll('.day-tab').forEach(el => el.classList.remove('active'));
+            const activeTab = document.getElementById(`tab-${dayId}`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+                activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        }
+        window.addEventListener('DOMContentLoaded', () => {
+            const daysMap = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+            updateActiveTab(daysMap[new Date().getDay()]);
+        });
+    </script>
+</body>
+</html>
+
